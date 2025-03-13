@@ -3,7 +3,7 @@
 # Simulation parameters
 YEARS = 30
 BLOCK_SIZE = 5            # for rolling 5-year budgets
-MIN_FLEET_SIZE = 466
+MIN_FLEET_SIZE = 300
 DISCOUNT_RATE = 0.02       # discount future costs
 
 # Default GA parameters
@@ -30,9 +30,9 @@ SCENARIO_PARAMS = {
     "high_threat": {"maint_cost_factor": 1.6, "capacity_demand": 2000}
 }
 
-ROLLING_BUDGET = [5e9, 4e9, 5e9, 6e9, 5e9, 4e9]  # six blocks for 30 years
+ROLLING_BUDGET = [15e9, 16e9, 25e9, 23e9, 21e9, 16e9]  # six blocks for 30 years
 
-BASE_OVERHAUL_PROB = {"KC135": 0.1, "KC46": 0.05, "NGAS": 0.03}
+BASE_OVERHAUL_PROB = {"KC135": 0.1, "KC46": 0.05, "KC46B": 0.03}
 SUBCOMPONENT_WEIGHTS = {"survivability": 0.4, "connectivity": 0.3, "multi_mission": 0.3}
 
 # Tanker specifications
@@ -52,10 +52,10 @@ TANKER_DATA = {
         "cap_connectivity": 0.5,
         "cap_multi_mission": 0.2,
         "maint_cost": 3_000_000,
-        "proc_cost": 200_000_000,
+        "proc_cost": 239_000_000,
         "max_production_per_year": 20
     },
-    "NGAS": {
+    "KC46B": {
         "capacity": 250,
         "cap_survivability": 0.9,
         "cap_connectivity": 0.6,
@@ -68,13 +68,13 @@ TANKER_DATA = {
 
 # Upgrade costs and improvements
 UPGRADES = {
-    "KC135": {"cost": 10_000_000, "delta_survivability": 0.1, "delta_connectivity": 0.2, "delta_multi_mission": 0.1},
+    "KC135": {"cost": 10_000_000, "delta_survivability": 0.1, "delta_connectivity": 0.2, "delta_multi_mission": 0.0},
     "KC46": {"cost": 20_000_000, "delta_survivability": 0.1, "delta_connectivity": 0.2, "delta_multi_mission": 0.0},
-    "NGAS": {"cost": 30_000_000, "delta_survivability": 0.05, "delta_connectivity": 0.1, "delta_multi_mission": 0.2}
+    "KC46B": {"cost": 30_000_000, "delta_survivability": 0.05, "delta_connectivity": 0.1, "delta_multi_mission": 0.2}
 }
 
 # Starting fleet counts
-START_KC135_COUNT = 400
-START_KC46_COUNT = 66
-START_NGAS_COUNT = 0
+START_KC135_COUNT = 365
+START_KC46_COUNT = 93
+START_KC46B_COUNT = 0
 USAGE_MAX = 3
