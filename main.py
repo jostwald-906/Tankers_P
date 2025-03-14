@@ -126,13 +126,25 @@ def simulate_fleet(individual):
         if year < 10:
             buy_KC46B = 0
         
-        for _ in range(min(retire_kc135, len(kc135_fleet))):
+        # Store initial counts before retirement actions:
+        initial_kc135 = len(kc135_fleet)
+        initial_kc46  = len(kc46_fleet)
+        initial_KC46B = len(KC46B_fleet)
+        
+        # Calculate effective retirements
+        effective_retire_kc135 = min(retire_kc135, initial_kc135)
+        effective_retire_kc46  = min(retire_kc46, initial_kc46)
+        effective_retire_KC46B = min(retire_KC46B, initial_KC46B)
+        
+        # Process retirements using the effective numbers:
+        for _ in range(effective_retire_kc135):
             kc135_fleet.pop(0)
-        for _ in range(min(retire_kc46, len(kc46_fleet))):
+        for _ in range(effective_retire_kc46):
             kc46_fleet.pop(0)
-        for _ in range(min(retire_KC46B, len(KC46B_fleet))):
+        for _ in range(effective_retire_KC46B):
             KC46B_fleet.pop(0)
         
+        # Process buy actions (these are always applied as is)
         for _ in range(buy_kc135):
             kc135_fleet.append({
                 "age": 0, "downtime": 0.0,
@@ -155,17 +167,24 @@ def simulate_fleet(individual):
                 "multi_mission": config.TANKER_DATA["KC46B"]["cap_multi_mission"]
             })
         
-        if upgrade_kc135 > 0 and kc135_fleet:
+        # Compute effective upgrades.
+        # Upgrades are only applied if there's at least one aircraft after retire and buy actions.
+        effective_upgrade_kc135 = 1 if (upgrade_kc135 > 0 and len(kc135_fleet) > 0) else 0
+        effective_upgrade_kc46  = 1 if (upgrade_kc46 > 0 and len(kc46_fleet) > 0) else 0
+        effective_upgrade_KC46B = 1 if (upgrade_KC46B > 0 and len(KC46B_fleet) > 0) else 0
+        
+        # Apply upgrades only if effective upgrade is 1
+        if effective_upgrade_kc135:
             used_budget_blocks[block_idx] += config.UPGRADES["KC135"]["cost"]
             kc135_fleet[0]["survivability"] += config.UPGRADES["KC135"]["delta_survivability"]
             kc135_fleet[0]["connectivity"] += config.UPGRADES["KC135"]["delta_connectivity"]
             kc135_fleet[0]["multi_mission"] += config.UPGRADES["KC135"]["delta_multi_mission"]
-        if upgrade_kc46 > 0 and kc46_fleet:
+        if effective_upgrade_kc46:
             used_budget_blocks[block_idx] += config.UPGRADES["KC46"]["cost"]
             kc46_fleet[0]["survivability"] += config.UPGRADES["KC46"]["delta_survivability"]
             kc46_fleet[0]["connectivity"] += config.UPGRADES["KC46"]["delta_connectivity"]
             kc46_fleet[0]["multi_mission"] += config.UPGRADES["KC46"]["delta_multi_mission"]
-        if upgrade_KC46B > 0 and KC46B_fleet:
+        if effective_upgrade_KC46B:
             used_budget_blocks[block_idx] += config.UPGRADES["KC46B"]["cost"]
             KC46B_fleet[0]["survivability"] += config.UPGRADES["KC46B"]["delta_survivability"]
             KC46B_fleet[0]["connectivity"] += config.UPGRADES["KC46B"]["delta_connectivity"]
@@ -226,16 +245,16 @@ def simulate_fleet(individual):
             "Year": 2025 + year,
             "KC135": len(kc135_fleet),
             "KC135_bought": buy_kc135,
-            "KC135_retired": retire_kc135,
-            "KC135_upgraded": upgrade_kc135,
+            "KC135_retired": effective_retire_kc135,
+            "KC135_upgraded": effective_upgrade_kc135,
             "KC46": len(kc46_fleet),
             "KC46_bought": buy_kc46,
-            "KC46_retired": retire_kc46,
-            "KC46_upgraded": upgrade_kc46,
+            "KC46_retired": effective_retire_kc46,
+            "KC46_upgraded": effective_upgrade_kc46,
             "KC46B": len(KC46B_fleet),
             "KC46B_bought": buy_KC46B,
-            "KC46B_retired": retire_KC46B,
-            "KC46B_upgraded": upgrade_KC46B,
+            "KC46B_retired": effective_retire_KC46B,
+            "KC46B_upgraded": effective_upgrade_KC46B,
             "Annual_Cost": annual_cost,
             "Annual_Capacity": annual_capacity,
             "Annual_Capability": annual_capability
