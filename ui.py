@@ -409,6 +409,30 @@ The final Pareto front shows the trade-offs between these objectives.
             )
             st.plotly_chart(fig_area, use_container_width=True)
             
+            # Detailed Cost Breakdown Section
+            with st.expander("Detailed Cost Breakdown", expanded=True):
+                st.markdown("### Detailed Cost Breakdown Over Time")
+                # Create a stacked bar chart with Procurement Cost and Operational/Maintenance Cost.
+                cost_chart = go.Figure()
+                cost_chart.add_trace(go.Bar(
+                    x=df_sol["Year"],
+                    y=df_sol["Procurement_Cost"],
+                    name="Procurement Cost"
+                ))
+                cost_chart.add_trace(go.Bar(
+                    x=df_sol["Year"],
+                    y=df_sol["Operational_Cost"],
+                    name="Operational/Maintenance Cost"
+                ))
+                cost_chart.update_layout(
+                    barmode='stack',
+                    xaxis_title="Year",
+                    yaxis_title="Cost ($)",
+                    title="Stacked Annual Cost Breakdown"
+                )
+                st.plotly_chart(cost_chart, use_container_width=True)
+
+            
             # Yearly Decision Details Table.
             required_cols = ["Year", "KC135_bought", "KC135_retired", "KC135_upgraded",
                              "KC46_bought", "KC46_retired", "KC46_upgraded",
@@ -482,6 +506,7 @@ The final Pareto front shows the trade-offs between these objectives.
                     "Total Avg Annual Fleet": "{:,.1f}"
                 }
                 st.table(combined_df.style.format(format_dict))
+            
             
             # Dashboard Summary: Tiles for selected solution and Pareto averages.
             with st.expander("Dashboard Summary (Key Performance Indicators)", expanded=True):
