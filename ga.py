@@ -136,9 +136,12 @@ def run_ga(progress_bar=None):
     random.seed(42)
     pop = toolbox.population(n=config.DEFAULT_POP_SIZE)
     pop = list(map(assign_fitness, pop))
+    pop_size = len(pop)
     assignCrowdingDist(pop)
     for gen in range(1, config.DEFAULT_NGEN + 1):
-        offspring = tools.selTournamentDCD(pop, len(pop))
+        pop_size = len(pop)
+        k = pop_size - (pop_size % 4)
+        offspring = tools.selTournamentDCD(pop, k)
         offspring = list(map(toolbox.clone, offspring))
         for c1, c2 in zip(offspring[::2], offspring[1::2]):
             if random.random() < config.DEFAULT_CXPB:
